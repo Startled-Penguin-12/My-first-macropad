@@ -1,0 +1,46 @@
+from kmk.kmk_keyboard import KMKKeyboard
+from kmk.keys import KC
+from kmk.scanners import DiodeOrientation
+import board
+import busio
+from kmk.modules.encoder import EncoderHandler
+
+import adafruit_ssd1306
+
+keyboard = KMKKeyboard()
+encoder_handler = EncoderHandler()
+keyboard.extensions.append(encoder_handler)
+
+# Define your microcontroller pins for rows and columns
+keyboard.col_pins = (board.D3, board.D11, board.D10, board.D6)
+keyboard.row_pins = (board.D0, board.D1, board.D2)
+keyboard.diode_orientation = DiodeOrientation.ROW2COL
+encoder_handler.pins = ((board.D9, board.D8,),)
+i2c = busio.I2C(board.D5, board.D4)
+
+# Define your keymap layout
+keyboard.keymap = [
+    [
+        KC.F3, KC.F13, KC.F14, KC.F15,
+        KC.F16, KC.F17, KC.F18, KC.F19,
+        KC.F20, KC.F21, KC.F22, KC.F23,
+    ]
+]
+encoder_handler.map = [
+    (
+        (KC.VOLU, KC.VOLD), 
+    )
+]
+
+display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, addr=0x3C)
+
+display.fill(0)
+display.text("KMK Keyboard", 0, 0, 1)
+display.show()
+
+if __name__ == '__main__':
+    keyboard.go()
+    display.fill(0)
+    display.text("Neel's Hackpad", 0, 0, 1)
+    display.show()
+
